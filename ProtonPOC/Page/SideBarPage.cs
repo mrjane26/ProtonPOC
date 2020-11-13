@@ -12,7 +12,7 @@ namespace ProtonPOC.Page
         {
         }
 
-        private readonly By BackToMailboxBy = By.XPath("//*[@data-test-id='sidebar:compose']");
+        private readonly By BackToMailboxBy = By.XPath("//a[text()='Back to Mailbox']");
         public IWebElement BackToMailboxButton => Driver.FindElement(BackToMailboxBy);
 
         private readonly By FoldersAndLabelsBy = By.XPath("//span[text()='Folders & labels']");
