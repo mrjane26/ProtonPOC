@@ -15,7 +15,9 @@ namespace ProtonPOC
         [SetUp]
         public void DriverSetupChrome()
         {
-            Driver = new ChromeDriver();
+            var options = new ChromeOptions();
+            options.AddArguments("headless");
+            Driver = new ChromeDriver(options);
             Driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(10);
             Driver.Manage().Window.Maximize();
         }
