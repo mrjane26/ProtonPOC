@@ -1,9 +1,8 @@
 ﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using ProtonPOC.Specification;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Text;
 
 namespace ProtonPOC.Page
 {
@@ -13,9 +12,9 @@ namespace ProtonPOC.Page
         private readonly string Password = ConfigurationManager.AppSettings.Get("Password");
         private readonly string BaseUrl = ConfigurationManager.AppSettings.Get("UITestBaseURL");
 
-        public LoginPage(IWebDriver driver) : base(driver)
-        {
-        }
+        private readonly ProtonSpec proton;
+
+        public LoginPage(IWebDriver driver, ProtonSpec proton) : base(driver) => this.proton = proton;
 
         private readonly By usernameBy = By.Id("login");
         public IWebElement User => Driver.FindElement(usernameBy);
@@ -58,7 +57,7 @@ namespace ProtonPOC.Page
         {
             SignIn.Click();
 
-            return new SideBarPage(Driver);
+            return new SideBarPage(Driver, proton);
         }
 
         public SideBarPage LoginUser()
@@ -68,7 +67,7 @@ namespace ProtonPOC.Page
             EnterPassword();
             Login();
 
-            return new SideBarPage(Driver);
+            return new SideBarPage(Driver, proton);
         }
     }
 }

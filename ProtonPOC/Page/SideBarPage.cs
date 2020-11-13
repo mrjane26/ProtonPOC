@@ -1,16 +1,14 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ProtonPOC.Specification;
 
 namespace ProtonPOC.Page
 {
     public class SideBarPage : Page
     {
-        public SideBarPage(IWebDriver driver) : base(driver)
-        {
-        }
+        private readonly ProtonSpec proton;
+
+        public SideBarPage(IWebDriver driver, ProtonSpec proton) : base(driver) => this.proton = proton;
 
         private readonly By BackToMailboxBy = By.XPath("//a[text()='Back to Mailbox']");
         public IWebElement BackToMailboxButton => Driver.FindElement(BackToMailboxBy);
@@ -29,7 +27,7 @@ namespace ProtonPOC.Page
         {
             FoldersAndLabels.Click();
 
-            return new FoldersAndLabelsPage(Driver);
+            return new FoldersAndLabelsPage(Driver, proton);
         }
     }
 }
