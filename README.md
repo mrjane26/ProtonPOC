@@ -6,8 +6,11 @@ This is a proof of concept automation framework built using .NETCore 3.1 in comb
 The tests are aimed at the Folder and Labels functionality for ProtonMail, currently there are tests for:
 
 1.Logging in and confirming success
+
 2.Open the Folders and Labels page and confirm it's open
+
 3.Create a Folder and confirm it's creatin (cleanup of test data included)
+
 4.Create a Label and confirm it's creation (cleanup of test data included)
 
 The framework is using a Page Object Model architecture.
