@@ -39,7 +39,7 @@ namespace ProtonPOC
         {
             new LoginPage(Driver, Proton)
                 .LoginUser()
-                .ClickFoldersAndLabels()
+                .ClickFolders()
                 .VerifyFoldersAndLabelsIsDisplayed();
         }
 
@@ -48,10 +48,10 @@ namespace ProtonPOC
         {
             new LoginPage(Driver, Proton)
                 .LoginUser()
-                .ClickFoldersAndLabels()
+                .ClickFolders()
                 .AddFolder()
                 .VerifyFolderIsAdded()
-                .RemoveFolderOrLabel();
+                .RemoveFolder();
         }
 
         [Test]
@@ -59,10 +59,10 @@ namespace ProtonPOC
         {
             new LoginPage(Driver, Proton)
                 .LoginUser()
-                .ClickFoldersAndLabels()
+                .ClickLabels()
                 .AddLabel()
                 .VerifyLabelIsAdded()
-                .RemoveFolderOrLabel();
+                .RemoveLabel();
         }
 
         [TearDown]

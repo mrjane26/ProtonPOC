@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using ProtonPOC.Helpers;
 using ProtonPOC.Specification;
@@ -13,23 +14,38 @@ namespace ProtonPOC.Page
 
         public FoldersAndLabelsPage(IWebDriver driver, ProtonSpec proton) : base(driver) => this.proton = proton;
 
-        public IWebElement AddFolderButton => Driver.FindElement(By.XPath("//button[text()='Add folder']"));
+        public IWebElement AddFolderButton => Driver.FindElement(By.XPath("//button[@title='Create a new folder']"));
 
-        public IWebElement AddLabelButton => Driver.FindElement(By.XPath("//button[text()='Add label']"));
+        public IWebElement AddLabelButton => Driver.FindElement(By.XPath("//button[@title='Create a new label']"));
 
-        private readonly By AccountNameBy = By.Id("accountName");
-        public IWebElement AccountName => Driver.FindElement(AccountNameBy);
+        private readonly By FolderNameBy = By.Id("folder");
+        public IWebElement FolderName => Driver.FindElement(FolderNameBy);
 
-        public IWebElement Save => Driver.FindElement(By.XPath("//button[@type='submit']"));
+        private readonly By FoldersNameBy = By.XPath("//button[@title='Folders']");
+        public IWebElement FoldersName => Driver.FindElement(FoldersNameBy);
 
-        private By AddedFolderOrLabelBy(string name) => By.XPath($"//span[text()='{name}']");
+        private readonly By LabelsNameBy = By.XPath("//button[@title='Labels']");
+        public IWebElement LabelsName => Driver.FindElement(LabelsNameBy);
 
-        public IWebElement ActionsDropDown => Driver.FindElement(By.XPath("//button[@data-test-id='dropdown:open']"));
+        public IWebElement Save => Driver.FindElement(By.XPath("//button[@data-testid='label-modal:save']"));
 
-        private readonly By DeleteBy = By.XPath("//button[@data-test-id='folders/labels:item-delete']");
-        public IWebElement DeleteAction => Driver.FindElement(DeleteBy);
+        private By AddedFolderBy(string name) => By.XPath($"//div[text()='{name}']");
 
-        private readonly By DeletePopUpBy = By.XPath("//button[@type='submit' and contains(text(), 'Delete')]");
+        private By AddedLabelBy(string name) => By.XPath($"//span[text()='{name}']");
+
+        private readonly By FolderActionsBy = By.XPath("//button[@data-testid='dropdown-button' and @title='Folder options']");
+        public IWebElement FolderActions => Driver.FindElement(FolderActionsBy);
+
+        private readonly By LabelActionsBy = By.XPath("//button[@data-testid='dropdown-button' and @title='Label options']");
+        public IWebElement LabelActions => Driver.FindElement(LabelActionsBy);
+
+        private readonly By DeleteFolderBy = By.XPath("//button[text()='Delete folder']");
+        public IWebElement DeleteFolderAction => Driver.FindElement(DeleteFolderBy);
+
+        private readonly By DeleteLabelBy = By.XPath("//button[text()='Delete label']");
+        public IWebElement DeleteLabelAction => Driver.FindElement(DeleteLabelBy);
+
+        private readonly By DeletePopUpBy = By.XPath("//div[@class='modal-two']//button[contains(text(), 'Delete')]");
         public IWebElement DeletePopUp => Driver.FindElement(DeletePopUpBy);
 
         public FoldersAndLabelsPage VerifyFoldersAndLabelsIsDisplayed()
@@ -49,10 +65,10 @@ namespace ProtonPOC.Page
             AddFolderButton.Click();
 
             WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(c => c.FindElement(AccountNameBy).Displayed);
+            wait.Until(c => c.FindElement(FolderNameBy).Displayed);
 
-            AccountName.Click();
-            AccountName.SendKeys(proton.FolderName);
+            FolderName.Click();
+            FolderName.SendKeys(proton.FolderName);
             Save.Click();
 
             return this;
@@ -60,10 +76,18 @@ namespace ProtonPOC.Page
 
         public FoldersAndLabelsPage VerifyFolderIsAdded()
         {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
             WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(c => c.FindElement(AddedFolderOrLabelBy(proton.FolderName)));
+            wait.Until(c => c.FindElement(FoldersNameBy));
 
-            Assert.IsTrue(Driver.FindElement(AddedFolderOrLabelBy(proton.FolderName)).Displayed, $"Folder with name [{proton.FolderName}] was not added");
+            if (Driver.FindElements(AddedLabelBy(proton.FolderName)).Count == 0)
+            {
+                js.ExecuteScript("arguments[0].click();", FoldersName);
+            }
+
+            wait.Until(c => c.FindElement(AddedFolderBy(proton.FolderName)));
+
+            Assert.IsTrue(Driver.FindElement(AddedFolderBy(proton.FolderName)).Displayed, $"Folder with name [{proton.FolderName}] was not added");
 
             return this;
         }
@@ -74,10 +98,10 @@ namespace ProtonPOC.Page
             AddLabelButton.Click();
 
             WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(c => c.FindElement(AccountNameBy).Displayed);
+            wait.Until(c => c.FindElement(FolderNameBy).Displayed);
 
-            AccountName.Click();
-            AccountName.SendKeys(proton.LabelName);
+            FolderName.Click();
+            FolderName.SendKeys(proton.LabelName);
             Save.Click();
 
             return this;
@@ -85,24 +109,48 @@ namespace ProtonPOC.Page
 
         public FoldersAndLabelsPage VerifyLabelIsAdded()
         {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)Driver;
             WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(c => c.FindElement(AddedFolderOrLabelBy(proton.LabelName)));
+            wait.Until(c => c.FindElement(LabelsNameBy));
 
-            Assert.IsTrue(Driver.FindElement(AddedFolderOrLabelBy(proton.LabelName)).Displayed, $"Folder with name [{proton.LabelName}] was not added");
+            if (Driver.FindElements(AddedLabelBy(proton.LabelName)).Count == 0)
+            {
+                js.ExecuteScript("arguments[0].click();", LabelsName);
+            }
+
+            wait.Until(c => c.FindElement(AddedLabelBy(proton.LabelName)));
+
+            Assert.IsTrue(Driver.FindElement(AddedLabelBy(proton.LabelName)).Displayed, $"Folder with name [{proton.LabelName}] was not added");
 
             return this;
         }
 
-        public FoldersAndLabelsPage RemoveFolderOrLabel()
+        public FoldersAndLabelsPage RemoveFolder()
         {
-            ActionsDropDown.Click();
-
             WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
-            wait.Until(c => c.FindElement(DeleteBy));
-            DeleteAction.Click();
+            Actions action = new Actions(Driver);
 
-            wait.Until(c => c.FindElement(DeletePopUpBy));
-            DeletePopUp.Click();
+            action.MoveToElement(FolderActions).Perform();
+            wait.Until(c => c.FindElement(FolderActionsBy)).Click();
+
+            wait.Until(c => c.FindElement(DeleteFolderBy)).Click();
+
+            wait.Until(c => c.FindElement(DeletePopUpBy)).Click();
+
+            return this;
+        }
+
+        public FoldersAndLabelsPage RemoveLabel()
+        {
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
+            Actions action = new Actions(Driver);
+
+            action.MoveToElement(LabelActions).Perform();
+            wait.Until(c => c.FindElement(LabelActionsBy)).Click();
+
+            wait.Until(c => c.FindElement(DeleteLabelBy)).Click();
+
+            wait.Until(c => c.FindElement(DeletePopUpBy)).Click();
 
             return this;
         }

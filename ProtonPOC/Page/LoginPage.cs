@@ -16,7 +16,7 @@ namespace ProtonPOC.Page
 
         public LoginPage(IWebDriver driver, ProtonSpec proton) : base(driver) => this.proton = proton;
 
-        private readonly By usernameBy = By.Id("login");
+        private readonly By usernameBy = By.Id("username");
         public IWebElement User => Driver.FindElement(usernameBy);
 
         private readonly By passwordBy = By.Id("password");

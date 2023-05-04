@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using ProtonPOC.Specification;
+using System;
 
 namespace ProtonPOC.Page
 {
@@ -10,22 +12,35 @@ namespace ProtonPOC.Page
 
         public SideBarPage(IWebDriver driver, ProtonSpec proton) : base(driver) => this.proton = proton;
 
-        private readonly By BackToMailboxBy = By.XPath("//a[text()='Back to Mailbox']");
-        public IWebElement BackToMailboxButton => Driver.FindElement(BackToMailboxBy);
+        private readonly By UsernameBy = By.XPath("//*[text()='User.ProtonTest']");
+        public IWebElement BackToMailboxButton => Driver.FindElement(UsernameBy);
 
-        private readonly By FoldersAndLabelsBy = By.XPath("//span[text()='Folders & labels']");
-        public IWebElement FoldersAndLabels => Driver.FindElement(FoldersAndLabelsBy);
+        private readonly By FoldersBy = By.XPath("//span[text()='Folders']");
+        public IWebElement Folders => Driver.FindElement(FoldersBy);
+
+        private readonly By LabelsBy = By.XPath("//span[text()='Folders']");
+        public IWebElement Labels => Driver.FindElement(LabelsBy);
 
         public SideBarPage VerifyUserIsLoggedIn()
         {
-            Assert.IsTrue(Driver.FindElement(BackToMailboxBy).Displayed, "The user is not logged in");
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(20));
+            wait.Until(c => c.FindElement(UsernameBy));
+
+            Assert.IsTrue(Driver.FindElements(UsernameBy).Count > 0, "The user is not logged in");
 
             return this;
         }
 
-        public FoldersAndLabelsPage ClickFoldersAndLabels()
+        public FoldersAndLabelsPage ClickFolders()
         {
-            FoldersAndLabels.Click();
+            Folders.Click();
+
+            return new FoldersAndLabelsPage(Driver, proton);
+        }
+
+        public FoldersAndLabelsPage ClickLabels()
+        {
+            Labels.Click();
 
             return new FoldersAndLabelsPage(Driver, proton);
         }
